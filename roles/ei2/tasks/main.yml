@@ -1,0 +1,22 @@
+---
+- name: Install packages on k3s nodes
+  become: true
+  ansible.builtin.apt:
+    pkg: "{{ ei2_packages }}"
+    update_cache: true
+    state: present
+
+- name: Write out netplan config files
+  become: true
+  ansible.builtin.template:
+    src: netplan.yaml.j2
+    dest: /etc/netplan/{{ network.filename }}
+    owner: root
+    group: root
+    mode: 0644
+  with_items: "{{ ei2_networks }}"
+  loop_control:
+    loop_var: network
+  tags:
+    - ei2-networks
+  notify: Apply Network Changes

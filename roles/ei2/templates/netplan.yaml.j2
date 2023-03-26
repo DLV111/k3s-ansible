@@ -1,0 +1,25 @@
+#jinja2: lstrip_blocks: "True"
+# This is the network config written by 'ansible'
+network:
+  ethernets:
+    {{ network.ifname }}:
+      addresses:
+      {% for address in network.ipv4 %}
+      - {{ address }}
+      {% endfor %}
+      nameservers:
+        addresses:
+        {% for nameserver in network.nameservers.addresses %}
+        - {{ nameserver }}
+        {% endfor %}
+        search:
+        {% for search in network.nameservers.search %}
+        - {{ search }}
+        {% endfor %}
+      {% if network.routes is defined %}
+      routes:
+      {% for route in network.routes %}
+      - to: {{ route['to'] }}
+        via: {{ route['via'] }}
+      {%- endfor %}
+    {% endif %}
